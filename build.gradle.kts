@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "top.mrxiaom.figura.bukkit"
-version = "1.0.1"
+version = "1.0.1-aihmc"
 val targetJavaVersion = 8
 val shadowGroup = "top.mrxiaom.figura.bukkit.libs"
 
@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("io.netty:netty-buffer:4.1.97.Final")
 
     compileOnly("me.clip:placeholderapi:2.11.6")
@@ -30,9 +30,9 @@ dependencies {
     implementation("net.kyori:adventure-platform-bukkit:4.3.4")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
-    implementation("de.tr7zw:item-nbt-api:2.14.1")
+    implementation("de.tr7zw:item-nbt-api:2.15.5")
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.2.2")
+    implementation("top.mrxiaom:PluginBase:1.3.7")
     implementation(project(":paper"))
 }
 tasks {

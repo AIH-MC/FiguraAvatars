@@ -4,13 +4,11 @@ import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufUtil;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -21,7 +19,6 @@ import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Util;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.*;
 
 @AutoRegister
@@ -41,7 +38,6 @@ public class Avatars extends AbstractModule implements Listener {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
         buffer.writeLong(uuid.getMostSignificantBits());
         buffer.writeLong(uuid.getLeastSignificantBits());
-        customPayload(e.getPlayer(), "figura:uuid", ByteBufUtil.getBytes(buffer));
         sendUploadState(e.getPlayer().getUniqueId(), e.getPlayer().hasPermission("figura.upload"));
     }
 
@@ -106,29 +102,6 @@ public class Avatars extends AbstractModule implements Listener {
                 warn("加载外观配置 " + folder.getName() + " 时出现错误", t);
             }
         }
-    }
-
-    public void customPayload(Player player, String id, byte[] bytes) {
-        // 发送 CustomPayLoad 包
-        if (!player.getListeningPluginChannels().contains(id)) {
-            Class<? extends Player> clazz = player.getClass();
-            try {
-                Method method = clazz.getDeclaredMethod("addChannel", String.class);
-                method.invoke(player, id);
-            } catch (ReflectiveOperationException e) {
-                warn(e);
-                return;
-            }
-        }
-        player.sendPluginMessage(plugin, id, bytes);
-    }
-
-    public void openWardrobe(Player player) {
-        customPayload(player, "figura:wardrobe", new ByteArrayOutputStream().toByteArray());
-    }
-
-    public void requestReconnect(Player player) {
-        customPayload(player, "figura:reconnect", new ByteArrayOutputStream().toByteArray());
     }
 
     public Set<String> keys() {

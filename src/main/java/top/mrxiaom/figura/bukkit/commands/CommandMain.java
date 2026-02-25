@@ -31,28 +31,19 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 2 && "refresh".equalsIgnoreCase(args[0]) && sender.isOp()) {
+    if (args.length == 2 && "refresh".equalsIgnoreCase(args[0])) {
+            if (!sender.hasPermission("figura.avatars.admin")) {
+                return Messages.commands__no_permission.tm(sender);
+            }
             Player player = Util.getOnlinePlayer(args[1]).orElse(null);
             if (player == null) {
                 return Messages.player__not_found.tm(sender);
             }
             UUID uuid = player.getUniqueId();
+            // 根据是否有 figura.upload 权限同步上传状态
             boolean state = player.hasPermission("figura.upload");
             Avatars.inst().sendUploadState(uuid, state);
-            Avatars.inst().requestReconnect(player);
             return Messages.commands__refresh_success.tm(sender, Pair.of("%player%", player.getName()));
-        }
-        if (args.length >= 2 && "wardrobe".equalsIgnoreCase(args[0]) && sender.isOp()) {
-            Player player = Util.getOnlinePlayer(args[1]).orElse(null);
-            if (player == null) {
-                return Messages.player__not_found.tm(sender);
-            }
-            boolean silent = args.length >= 3 && args[2].equals("-s");
-            Avatars.inst().openWardrobe(player);
-            if (!silent) {
-                Messages.commands__wardrobe_success.tm(sender, Pair.of("%player%", player.getName()));
-            }
-            return true;
         }
         if (args.length >= 1 && "open".equalsIgnoreCase(args[0])) {
             Player target;
@@ -76,38 +67,38 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             GuiAvatars.inst().createGui(target).open();
             return true;
         }
-        if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
-            plugin.reloadConfig();
-            Messages.commands__reload.tm(sender);
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
-                if (holder instanceof GuiAvatars.Impl) {
-                    ((GuiAvatars.Impl) holder).markLegacy();
+        if (args.length == 1 && "reload".equalsIgnoreCase(args[0])) {
+                if (!sender.hasPermission("figura.avatars.admin")) {
+                    return Messages.commands__no_permission.tm(sender);
                 }
+                plugin.reloadConfig();
+                Messages.commands__reload.tm(sender);
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+                    if (holder instanceof GuiAvatars.Impl) {
+                        ((GuiAvatars.Impl) holder).markLegacy();
+                    }
+                }
+                return true;
             }
-            return true;
-        }
-        return (sender.isOp() ? Messages.commands__help__admin : Messages.commands__help__normal).tm(sender);
+        return (sender.hasPermission("figura.avatars.admin") ? Messages.commands__help__admin : Messages.commands__help__normal).tm(sender);
     }
 
     private static final List<String> emptyList = Lists.newArrayList();
     private static final List<String> listArg0 = Lists.newArrayList("open");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "open", "wardrobe", "refresh", "reload");
+            "open", "refresh", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return startsWith(sender.isOp() ? listOpArg0 : listArg0, args[0]);
+            return startsWith(sender.hasPermission("figura.avatars.admin") ? listOpArg0 : listArg0, args[0]);
         }
         if (args.length == 2) {
             if ("open".equalsIgnoreCase(args[0]) && sender.hasPermission("figura.avatars.open.other")) {
                 return null;
             }
-            if ("wardrobe".equalsIgnoreCase(args[0]) && sender.isOp()) {
-                return null;
-            }
-            if ("refresh".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            if ("refresh".equalsIgnoreCase(args[0]) && sender.hasPermission("figura.avatars.admin")) {
                 return null;
             }
         }

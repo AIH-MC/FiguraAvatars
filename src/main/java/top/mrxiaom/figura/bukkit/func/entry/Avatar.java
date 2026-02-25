@@ -2,7 +2,6 @@ package top.mrxiaom.figura.bukkit.func.entry;
 
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTFile;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -55,7 +54,6 @@ public class Avatar {
         UUID uuid = player.getUniqueId();
         manager.putAvatar(uuid, moon, true);
         manager.sendUpdateAvatar(uuid);
-        Bukkit.getScheduler().runTask(manager.plugin, () -> manager.openWardrobe(player));
     }
 
     public void equip(Player player) {
@@ -63,7 +61,6 @@ public class Avatar {
         UUID uuid = player.getUniqueId();
         manager.putAvatar(uuid, moon, false);
         manager.sendUpdateAvatar(uuid);
-        Bukkit.getScheduler().runTask(manager.plugin, () -> manager.openWardrobe(player));
     }
 
     @Nullable
